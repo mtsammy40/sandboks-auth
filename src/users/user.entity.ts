@@ -1,8 +1,22 @@
-import { Column, Entity } from 'typeorm';
+import { Column, ColumnTypeUndefinedError, Entity, Generated } from 'typeorm';
 
+
+export enum TokenType {
+  VERIFY_EMAIL="VE", AUTHENTICATION = "AT"
+}
+export interface Token {
+  type: TokenType;
+  tokenString: string;
+}
+export interface PasswordData {
+  password: string;
+  salt: string;
+  previous: [];
+  last_updated_at: Date;
+}
 @Entity('users')
 export class User {
-  @Column({ primary: true, nullable: false, generated: 'uuid' })
+  @Column({ primary: true, generated: 'uuid' })
   id: string;
 
   @Column({ name: 'first_name', nullable: false })
@@ -11,7 +25,7 @@ export class User {
   @Column({ name: 'last_name', nullable: false })
   lastName: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, unique: true })
   email: string;
 
   @Column({ name: 'created_at', nullable: false })
@@ -20,6 +34,10 @@ export class User {
   @Column({ name: 'updated_at', nullable: false })
   updatedAt: Date;
 
-  @Column()
-  password: string;
+  @Column({name: 'password_data', nullable: false, type: 'jsonb'})
+  passwordData: PasswordData;
+
+  @Column({ name: 'active_tokens', type: 'jsonb'})
+  activeTokens: Token[];
+
 }

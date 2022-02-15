@@ -3,7 +3,7 @@
   "url": "postgres://sdhhbldrgtnhtx:540dd1aeef5b556a6d27a40622e027683401d7de88a3a4fdfcfcfc8bc3b2ac0b@ec2-34-233-64-238.compute-1.amazonaws.com:5432/dd7vuikpovbot4",
   "schema": "auth",
   "entities": ["dist/**/*.entity{.ts,.js}"],
-  "synchronize": false,
+  "synchronize": true,
   "ssl": true,
   "extra": {
     "ssl": {
