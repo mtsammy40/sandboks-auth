@@ -7,6 +7,9 @@ import { JwtService } from "@nestjs/jwt";
 import * as crypto from "crypto";
 import { ApplicationException } from "../commons/application.exception";
 import { ErrorCode } from "../commons/error.code";
+import { Client, ClientKafka } from "@nestjs/microservices";
+import { microserviceConfig } from "../microservice.config";
+import { PlatformEvents } from "../commons/platform-events.enum";
 
 export class PasswordManager {
   hash(
@@ -34,6 +37,8 @@ export class PasswordManager {
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
+
+  @Client(microserviceConfig) client: ClientKafka;
 
   constructor(
     @InjectRepository(User)
@@ -183,14 +188,17 @@ export class UsersService {
           Logger.log('Activating user... ');
           user.status = Status.ACTIVE;
 
-          // todo send email to user to notify them that they have been activated
+          await this.client.emit<User>(
+            PlatformEvents.USER_CREATED,
+            JSON.stringify(user),
+          );
         }
         await this.save(user);
       }
       return isValid;
     } catch (e) {
       console.error(e);
-      throw new Error("Invalid Link");
+      return false;
     }
   }
 }
