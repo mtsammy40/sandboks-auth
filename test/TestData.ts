@@ -1,25 +1,36 @@
-import { randomUUID } from "crypto";
-import { Status } from "../src/users/user.entity";
+import { Status, TokenType } from "../src/users/user.entity";
+import { v4 as uuid } from "uuid";
 
 export default class TestData {
   static users = [
     {
-      id: "uuid_3049_uuid_3049",
+      id: uuid(),
       firstName: "Samuel",
       lastName: "Mutemi",
       email: "mtsammy40@gmail.com",
       updatedAt: new Date(),
-      activeTokens: [],
-      status: Status.ACTIVE
+      activeTokens: [{
+        type: TokenType.VERIFY_EMAIL,
+        tokenString: 'Token'
+      }],
+      status: Status.ACTIVE,
+      passwordData: {
+        password: "hashed",
+        salt: "salt"
+      }
     },
     {
-      id: "uuid_3049_uuid_3049",
+      id: uuid(),
       firstName: "Jane",
       lastName: "Doe",
-      email: "mtsammy40@gmail.com",
+      email: "test@gmail.com",
       updatedAt: new Date(),
-      activeTokens: [{ type: "AT" }, { tokenString: "Token" }],
-      status: Status.ACTIVE
+      activeTokens: [{ type: TokenType.VERIFY_EMAIL, tokenString: "AT" }, { tokenString: "Token" }],
+      status: Status.ACTIVE,
+      passwordData: {
+        password: "hashed",
+        salt: "salt"
+      }
     }
   ];
 }
