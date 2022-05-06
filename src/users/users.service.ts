@@ -130,11 +130,11 @@ export class UsersService {
         ]);
       this.logger.log("Saving user " + JSON.stringify(user));
       await this.save(user);
-      console.log(
+      this.logger.log(
         "User email verification template : " + emailVerificationToken
       );
     } catch (e) {
-      console.error(e);
+      this.logger.error(e);
       throw new Error("Failed to generate activation email token");
     }
 

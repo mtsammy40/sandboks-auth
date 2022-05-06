@@ -9,8 +9,15 @@ describe('AppController', () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [AppService],
+      imports: []
     }).compile();
 
     appController = app.get<AppController>(AppController);
   });
+
+  describe("app controller", () => {
+    it("should be defined", function() {
+      expect(appController).toBeDefined();
+    });
+  })
 });
