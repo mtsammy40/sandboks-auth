@@ -5,13 +5,14 @@ import { User } from "./user.entity";
 import { userRepositoryTest } from "./users.controller.spec";
 import { JwtModule } from "@nestjs/jwt";
 import { jwtConstants } from "../auth/constants";
+import { Logger } from "@nestjs/common";
 
 describe('UsersService', () => {
   let service: UsersService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService, {
+      providers: [UsersService, Logger, {
         provide: getRepositoryToken(User),
         useValue: userRepositoryTest
       }],
@@ -19,7 +20,7 @@ describe('UsersService', () => {
         JwtModule.register({
           secret: jwtConstants.secret,
           signOptions: { expiresIn: "24h" }
-        })
+        }),
       ]
     }).compile();
 

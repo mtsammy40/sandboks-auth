@@ -7,6 +7,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { User } from "../users/user.entity";
 import { userRepositoryTest } from "../users/users.controller.spec";
 import { UsersService } from "../users/users.service";
+import { Logger } from "@nestjs/common";
 
 describe("AuthController", () => {
   let controller: AuthController;
@@ -18,13 +19,12 @@ describe("AuthController", () => {
       providers: [AuthService, UsersService, {
         provide: getRepositoryToken(User),
         useValue: userRepositoryTest
-      }],
+      }, Logger],
       imports: [
         JwtModule.register({
           secret: jwtConstants.secret,
           signOptions: { expiresIn: "24h" }
-        })
-      ]
+        }),]
     }).compile();
 
 

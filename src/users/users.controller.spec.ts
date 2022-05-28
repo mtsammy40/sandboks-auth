@@ -9,12 +9,13 @@ import TestData from "../../test/TestData";
 import { ApplicationException } from "../commons/application.exception";
 import { ErrorCode } from "../commons/error.code";
 import { getUserRepository } from "../../test/TestRepositories";
+import { Logger } from "@nestjs/common";
 
 let userDb = TestData.users;
 export const userRepositoryTest = getUserRepository(userDb);
 export const userModuleTest = Test.createTestingModule({
   controllers: [UsersController],
-  providers: [UsersService, {
+  providers: [UsersService, Logger, {
     provide: getRepositoryToken(User),
     useValue: userRepositoryTest
   }],
@@ -23,8 +24,7 @@ export const userModuleTest = Test.createTestingModule({
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: "24h" }
-    })
-  ]
+    }),]
 }).compile();
 
 
