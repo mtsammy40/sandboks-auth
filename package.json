@@ -29,6 +29,7 @@
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/typeorm": "^8.0.3",
     "kafkajs": "^1.16.0",
+    "nest-winston": "^1.6.2",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
@@ -38,7 +39,8 @@
     "rxjs": "^7.2.0",
     "sqlite3": "^5.0.8",
     "typeorm": "^0.2.41",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "winston": "^3.7.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

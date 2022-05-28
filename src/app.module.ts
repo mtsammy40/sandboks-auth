@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Logger, Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { UsersModule } from "./users/users.module";
@@ -11,7 +11,7 @@ import { ApplicationExceptionFilter } from "./application-exception.filter";
 @Module({
   imports: [UsersModule, TypeOrmModule.forRoot(), AuthModule],
   controllers: [AppController],
-  providers: [AppService, {
+  providers: [AppService, Logger, {
     provide: APP_FILTER,
     useClass: ApplicationExceptionFilter
   }]
