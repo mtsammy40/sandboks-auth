@@ -7,6 +7,7 @@ import { UsersService } from "../users/users.service";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { User } from "../users/user.entity";
 import { userRepositoryTest } from "../users/users.controller.spec";
+import { Logger } from "@nestjs/common";
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -16,13 +17,12 @@ describe('AuthService', () => {
       providers: [AuthService, UsersService, {
         provide: getRepositoryToken(User),
         useValue: userRepositoryTest
-      }],
+      }, Logger],
       imports: [
         JwtModule.register({
           secret: jwtConstants.secret,
           signOptions: { expiresIn: "24h" }
-        })
-      ]
+        }),]
     }).compile();
 
     service = module.get<AuthService>(AuthService);

@@ -5,12 +5,13 @@ import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  private readonly logger = new Logger(AuthService.name);
 
   constructor(
+    private readonly logger: Logger,
     private userService: UsersService,
     private jwtService: JwtService,
-  ) {}
+  ) {
+  }
 
   async validateUser(email: string, password: string): Promise<User> {
     this.logger.log('Validating user...', email, password);

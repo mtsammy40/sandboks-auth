@@ -36,11 +36,10 @@ export class PasswordManager {
 
 @Injectable()
 export class UsersService {
-  private readonly logger = new Logger(UsersService.name);
-
   @Client(microserviceConfig) client: ClientKafka;
 
   constructor(
+    private readonly logger: Logger,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
     private jwtService: JwtService
