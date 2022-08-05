@@ -5,11 +5,34 @@ version: 2.1
 # See: https://circleci.com/docs/2.0/orb-intro/
 orbs:
   node: circleci/node@4.7
+  docker: circleci/docker@1.5.0
+executors:
+  docker-publisher:
+  environment:
+  IMAGE_NAME: ndukwearm19docker/docker-node-app
+  docker: # Each job requires specifying an executor
+  # (either docker, macos, or machine), see
+  — image: circleci/node:latest
+  auth:
+  username: $DOCKERHUB_USERNAME
+  password: $DOCKERHUB_PASSWORD
+jobs:
+  publishLatestToHub:
+  executor: docker-publisher
 
+  steps:
+  — checkout
+  — setup_remote_docker
+  — run:
+  name: Publish Docker Image to Docker Hub
+  command: |
+  echo “$DOCKERHUB_PASSWORD” | docker login -u “$DOCKERHUB_USERNAME” — password-stdin
+  docker build -t $IMAGE_NAME .
+  docker push $IMAGE_NAME:latest
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
+  test: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - node/test:
@@ -19,3 +42,5 @@ workflows:
           version: '16.10'
           # If you are using yarn, change the line below from "npm" to "yarn"
           pkg-manager: npm
+      - publishLatestToHub
+
