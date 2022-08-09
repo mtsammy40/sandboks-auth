@@ -24,6 +24,7 @@ jobs:
     - docker/check
     - docker/build:
         image: $DOCKER_USERNAME/$DOCKER_REPO
+        tag: latest,v1
     - docker/push:
         digest-path: /tmp/digest.txt
         image: $DOCKER_USERNAME/$DOCKER_REPO
