@@ -42,7 +42,7 @@ jobs:
       - run: |
           ssh-keyscan -H 38.242.152.41 \>> ~/.ssh/known_hosts
           ssh notroot@38.242.152.41 \<<'ENDSSH'
-          bash -x ~/apps/sandboks-auth/deploy.ssh
+          bash -x ~/apps/sandboks-auth/deploy.sh
 
           ENDSSH
 workflows:
