@@ -7,19 +7,19 @@ orbs:
   node: circleci/node@4.7
   docker: circleci/docker@1.5.0
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
-workflows:
-  test: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
-    jobs:
-      - node/test:
-          # This is the node version to use for the `cimg/node` tag
-          # Relevant tags can be found on the CircleCI Developer Hub
-          # https://circleci.com/developer/images/image/cimg/node
-          version: '16.10'
-          # If you are using yarn, change the line below from "npm" to "yarn"
-          pkg-manager: npm
+jobs:
+  build-and-test:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          command: npm run test
+  publish-image:
+    docker:
+        - image: node:14.16.0
+    steps:
       - run:
         # installs a docker client that will be used to run the docker commands
           name: Install Docker client
@@ -39,3 +39,8 @@ workflows:
           command: |
             docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
             docker push ${DOCKER_USERNAME}/${DOCKER_REPO}:latest
+workflows:
+  build-and-test:
+    jobs:
+      - build-and-test
+      - publish-image
