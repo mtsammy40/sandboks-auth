@@ -6,29 +6,7 @@ version: 2.1
 orbs:
   node: circleci/node@4.7
   docker: circleci/docker@1.5.0
-executors:
-  docker-publisher:
-  environment:
-  IMAGE_NAME: ndukwearm19docker/docker-node-app
-  docker: # Each job requires specifying an executor
-  # (either docker, macos, or machine), see
-  — image: circleci/node:latest
-  auth:
-  username: $DOCKERHUB_USERNAME
-  password: $DOCKERHUB_PASSWORD
-jobs:
-  publishLatestToHub:
-  executor: docker-publisher
 
-  steps:
-  — checkout
-  — setup_remote_docker
-  — run:
-  name: Publish Docker Image to Docker Hub
-  command: |
-  echo “$DOCKERHUB_PASSWORD” | docker login -u “$DOCKERHUB_USERNAME” — password-stdin
-  docker build -t $IMAGE_NAME .
-  docker push $IMAGE_NAME:latest
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -42,5 +20,22 @@ workflows:
           version: '16.10'
           # If you are using yarn, change the line below from "npm" to "yarn"
           pkg-manager: npm
-      - publishLatestToHub
-
+      - run:
+        # installs a docker client that will be used to run the docker commands
+          name: Install Docker client
+          command: |
+            set -x
+            VER="17.03.0-ce"
+            curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
+            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            mv /tmp/docker/* /usr/bin
+      - run:
+        # Builds a docker image to push to Docker Hub
+          name: Build Docker image
+          command: docker build -t ${DOCKER_USERNAME}/${DOCKER_REPO}:latest .
+      - run:
+        # Pushes the Docker image you created to the Docker Hub.
+          name: Push to Docker Hub
+          command: |
+            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+            docker push ${DOCKER_USERNAME}/${DOCKER_REPO}:latest
