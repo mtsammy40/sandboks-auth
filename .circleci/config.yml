@@ -32,6 +32,17 @@ jobs:
     - run:
         command: |
           echo "Digest is: $(</tmp/digest.txt)"
+  deploy-to-server:
+    executor:
+      name: node/default
+    steps:
+      - attach_workspace:
+          at: src
+      - add_ssh_keys
+      - run: |
+          ssh-keyscan -H 38.242.152.41 >> ~/.ssh/known_hosts
+          ssh root@example.com <<'ENDSSH'
+          bash -x ~/apps/sandboks-auth/deploy.ssh
 workflows:
   build-test-push:
     jobs:
@@ -39,3 +50,6 @@ workflows:
       - build-and-push:
           requires:
           - build-and-test
+      - deploy-to-server:
+          requires:
+          - build-and-push
