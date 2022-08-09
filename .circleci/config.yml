@@ -16,31 +16,23 @@ jobs:
       - node/install-packages
       - run:
           command: npm run test
-  publish-image:
-    docker:
-        - image: node:14.16.0
+  build-and-push:
+    executor: docker/docker
     steps:
-      - run:
-        # installs a docker client that will be used to run the docker commands
-          name: Install Docker client
-          command: |
-            set -x
-            VER="17.03.0-ce"
-            curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
-            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
-            mv /tmp/docker/* /usr/bin
-      - run:
-        # Builds a docker image to push to Docker Hub
-          name: Build Docker image
-          command: docker build -t ${DOCKER_USERNAME}/${DOCKER_REPO}:latest .
-      - run:
-        # Pushes the Docker image you created to the Docker Hub.
-          name: Push to Docker Hub
-          command: |
-            docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
-            docker push ${DOCKER_USERNAME}/${DOCKER_REPO}:latest
+    - setup_remote_docker
+    - checkout
+    - docker/check
+    - docker/build:
+        image: $DOCKER_USERNAME/$DOCKER_REPO
+    - docker/push:
+        digest-path: /tmp/digest.txt
+        image: $DOCKER_USERNAME/$DOCKER_REPO
+        tag: latest,v1
+    - run:
+        command: |
+          echo "Digest is: $(</tmp/digest.txt)"
 workflows:
-  build-and-test:
+  build-test-push:
     jobs:
       - build-and-test
-      - publish-image
+      - build-and-push
