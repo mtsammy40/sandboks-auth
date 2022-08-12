@@ -33,6 +33,10 @@ jobs:
         command: |
           echo "Digest is: $(</tmp/digest.txt)"
   deploy-to-server:
+    filters:
+      branches:
+        only:
+          - main
     executor:
       name: node/default
     steps:
