@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Status, TokenType, User } from "./user.entity";
 import { Repository } from "typeorm";
@@ -10,6 +10,7 @@ import { ErrorCode } from "../commons/error.code";
 import { Client, ClientKafka } from "@nestjs/microservices";
 import { microserviceConfig } from "../microservice.config";
 import { PlatformEvents } from "../commons/platform-events.enum";
+import { EventBus } from "../commons/event-bus.enum";
 
 export class PasswordManager {
   hash(
@@ -36,13 +37,13 @@ export class PasswordManager {
 
 @Injectable()
 export class UsersService {
-  @Client(microserviceConfig) client: ClientKafka;
 
   constructor(
     private readonly logger: Logger,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    @Inject('KAFKA') private _client: ClientKafka
   ) {
   }
 
@@ -187,8 +188,8 @@ export class UsersService {
           Logger.log('Activating user... ');
           user.status = Status.ACTIVE;
 
-          await this.client.emit<User>(
-            PlatformEvents.USER_CREATED,
+          await this._client.emit<User>(
+            EventBus.MAIN,
             JSON.stringify(user),
           );
         }

@@ -10,12 +10,14 @@ import { ApplicationException } from "../commons/application.exception";
 import { ErrorCode } from "../commons/error.code";
 import { getUserRepository } from "../../test/TestRepositories";
 import { Logger } from "@nestjs/common";
+import { ClientKafka, ClientsModule } from "@nestjs/microservices";
+import { microserviceTestConfig } from "../microservice.test.config";
 
 let userDb = TestData.users;
 export const userRepositoryTest = getUserRepository(userDb);
 export const userModuleTest = Test.createTestingModule({
   controllers: [UsersController],
-  providers: [UsersService, Logger, {
+  providers: [UsersService, Logger, ClientKafka, {
     provide: getRepositoryToken(User),
     useValue: userRepositoryTest
   }],
@@ -24,19 +26,24 @@ export const userModuleTest = Test.createTestingModule({
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: "24h" }
-    }),]
+    }),
+    ClientsModule.register([
+      { name: "KAFKA", options: microserviceTestConfig }
+    ])]
 }).compile();
 
 
 describe("UsersController", () => {
   let controller: UsersController;
   let userService: UsersService;
+  let _kafkaClient: ClientKafka;
 
   beforeEach(async () => {
     const module: TestingModule = await userModuleTest;
 
     controller = module.get<UsersController>(UsersController);
     userService = module.get<UsersService>(UsersService);
+    _kafkaClient = module.get<ClientKafka>(ClientKafka);
   });
 
   it("should be defined", () => {
