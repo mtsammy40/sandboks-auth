@@ -5,6 +5,8 @@ import { User } from './user.entity';
 import { UsersController } from './users.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from 'src/auth/constants';
+import { ClientsModule } from "@nestjs/microservices";
+import { microserviceTestConfig } from "../microservice.test.config";
 
 @Module({
   imports: [
@@ -13,6 +15,9 @@ import { jwtConstants } from 'src/auth/constants';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '24h' },
     }),
+    ClientsModule.register([
+      { name: "KAFKA", options: microserviceTestConfig }
+    ])
   ],
   providers: [UsersService, Logger],
   exports: [TypeOrmModule, UsersService],

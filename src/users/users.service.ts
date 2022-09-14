@@ -201,4 +201,9 @@ export class UsersService {
       return false;
     }
   }
+
+  async passwordIsValid(user: User, suppliedPassword: string): Promise<boolean> {
+    return new PasswordManager()
+      .validate(suppliedPassword, user.passwordData.salt, user.passwordData.password);
+  }
 }

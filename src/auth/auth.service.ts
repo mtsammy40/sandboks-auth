@@ -14,9 +14,9 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string): Promise<User> {
-    this.logger.log('Validating user...', email, password);
+    this.logger.log(`Validating user... email : ${email}, passwordLength: ${password.trim().length}`);
     const user = await this.userService.findOneByEmail(email);
-    if (user && user.passwordData.password === password) {
+    if (user && await this.userService.passwordIsValid(user, password)) {
       this.logger.log('Returning user ... ');
       return user;
     } else {
